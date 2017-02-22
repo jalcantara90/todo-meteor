@@ -5,9 +5,10 @@ import { Todos } from '../api/api.task.js';
 import '../templates/task.html';
 
 Template.todos.helpers({
-    todo() {
-        return Todos.find({}, {sort: {createdAt: -1}});
-    },
+    'todo': function(){
+        var currentList = this._id;
+        return Todos.find({ listId: currentList }, {sort: {createdAt: -1}})
+    }
 });
 
 Template.todoItem.helpers({
@@ -23,10 +24,12 @@ Template.todoItem.helpers({
 
 Template.todosCount.helpers({
     'totalTodos': function(){
-        return Todos.find().count();
+        var currentList = this._id;
+        return Todos.find({ listId: currentList }).count();
     },
     'completedTodos': function(){
-        return Todos.find({ completed: true }).count();
+        var currentList = this._id;
+        return Todos.find({ listId: currentList, completed: true }).count();
     }
 });
 
@@ -38,15 +41,17 @@ Template.lists.helpers({
 
 Template.addTodo.events({
   'submit form': function(event){
-    event.preventDefault();
-    var todoName = event.target.todoName.value;
-    Todos.insert({
-        name: todoName,
-        completed: false,
-        createdAt: new Date()
-    });
-    event.target.todoName.value = "";
-  },
+        event.preventDefault();
+        var todoName = $('[name="todoName"]').val();
+        var currentList = this._id;
+        Todos.insert({
+            name: todoName,
+            completed: false,
+            createdAt: new Date(),
+            listId: currentList
+        });
+        $('[name="todoName"]').val('');
+    },
 });
 
 Template.todoItem.events({
@@ -104,14 +109,15 @@ Template.todoItem.events({
   }
 });
 
-
 Template.addList.events({
     'submit form': function(event){
-      event.preventDefault();
-      var listName = $('[name=listName]').val();
-      Lists.insert({
+        event.preventDefault();
+        var listName = $('[name=listName]').val();
+        Lists.insert({
           name: listName
-      });
-      $('[name=listName]').val('');
+        }, function(error, results){
+            Router.go('listPage', { _id: results });
+        });
+        $('[name=listName]').val('');
     }
 });

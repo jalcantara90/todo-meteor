@@ -14,6 +14,7 @@ Router.configure({
 });
 
 Router.route('/list/:_id', {
+    name: 'listPage',
     template: 'listPage',
     data: function(){
         var currentList = this.params._id;
