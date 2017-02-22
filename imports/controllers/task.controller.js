@@ -30,6 +30,12 @@ Template.todosCount.helpers({
     }
 });
 
+Template.lists.helpers({
+    'list': function(){
+        return Lists.find({}, {sort: {name: 1}});
+    }
+});
+
 Template.addTodo.events({
   'submit form': function(event){
     event.preventDefault();
@@ -96,4 +102,16 @@ Template.todoItem.events({
           console.log("Task marked as complete.");
       }
   }
+});
+
+
+Template.addList.events({
+    'submit form': function(event){
+      event.preventDefault();
+      var listName = $('[name=listName]').val();
+      Lists.insert({
+          name: listName
+      });
+      $('[name=listName]').val('');
+    }
 });
