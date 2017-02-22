@@ -40,6 +40,9 @@ Template.lists.helpers({
         return Lists.find({ createdBy: currentUser }, {sort: {name: 1}})
     }
 });
+Template.lists.onCreated(function () {
+    this.subscribe('lists');
+});
 
 Template.addTodo.events({
   'submit form': function(event){
